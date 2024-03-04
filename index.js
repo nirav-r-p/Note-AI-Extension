@@ -1,0 +1,25 @@
+// let startActionModule
+(async ()=>{
+    const sec=chrome.runtime.getURL("./utils/startJS.js");
+   const startAction=await import(sec);
+    console.log(startAction.default);
+    startAction.default();
+})();
+// (
+//     ()=>{
+//        console.log("load Notes...");
+//        const data = localStorage.getItem('notes');
+//        if(!data) return;
+//        const url = window.location.pathname;
+//        const noteCollection=JSON.parse(data);
+//        noteCollection.forEach((note)=>{
+//         if(url==note.url){
+
+//         }
+//        }) 
+//     }
+// )();
+
+
+
+
