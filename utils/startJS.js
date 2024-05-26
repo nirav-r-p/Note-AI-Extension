@@ -5,7 +5,7 @@ const AsyncImoprt = async (url) => {
     return ImpoprtModule;
 }
 const createNote=await AsyncImoprt("./Methods/addNotes.js");
-
+const read=await AsyncImoprt("utils/speakText.js")
 const createButton=()=>{
     const topDiv=document.createElement('div');
     topDiv.style.position='absolute';
@@ -64,7 +64,9 @@ export default function startAction(){
         createNote.createNoteElement({top,left});
     })
    addSpeekIcon.addEventListener("click",()=>{
-    console.log("speek");
+       const text=window.getSelection().toString();
+       console.log("speek",read," ",text);
+       read.readText(text);
    })
     customContext.addEventListener('pointerout', () => {
         document.body.removeChild(topDiv);

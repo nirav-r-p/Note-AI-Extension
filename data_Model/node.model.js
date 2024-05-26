@@ -1,5 +1,6 @@
 class Note{
-    constructor(url,content="",id,position){
+
+    constructor(id,url,content="",position){
         this.id=id;
         this.url=url;
         this.content=content;

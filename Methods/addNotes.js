@@ -6,12 +6,12 @@ const AsyncImoprt = async (url) => {
 }
 const createCss = await AsyncImoprt("./utils/createCssLink.js");
 const createNote = await AsyncImoprt("./component/createNoteDom.js");
-const noteObject=await AsyncImoprt("./data_Model/node.model.js");
+const noteObject = await AsyncImoprt("./data_Model/node.model.js");
 
 
 export function createNoteElement(
     position,
-    url = "",
+    url = window.location.pathname,
     content = "",
     id = generateId()
 
@@ -37,9 +37,13 @@ export function createNoteElement(
     //     });
 
     //     /**delete */
-    //     deleteImageDom.addEventListener("click",()=>{
-    //         console.log("delete ...");
-    //    });
+    const deleteImageDom = noteFildDom.querySelector('.trash');
+    console.log("delete Componenet",deleteImageDom);
+    deleteImageDom.addEventListener("click", () => {
+        console.log("delete ...",id);
+        removeNotes(id)
+        return
+    });
 
     //    /**download */
     //     saveImageDom.addEventListener('click',()=>{
@@ -110,31 +114,69 @@ export function createNoteElement(
 
 
 
-   
+
 
     // console.log(noteObject);
- 
-    // noteDOM.addEventListener('pointerout',()=>{
-    //     const note=new noteObject.Note(
-    //         id,
-    //         url,
-    //         content,
-    //         position
-    //     )
-    //     updateNote(note)
-    // })
+    const contentNote=noteFildDom.querySelector('.note-content');
+    noteDOM.addEventListener('pointerout', () => {
+        const note = new noteObject.Note(
+            id,
+            url,
+            content=contentNote.innerHTML,
+            position
+        )
+        console.log('call save...',note);
+        updateNotes(note)
+    })
 }
 
-// function updateNote(note_id){
-//     const data = localStorage.getItem('notes');
-//     if (data === null) return;
-//     const noteObject = JSON.parse(data);
-//     noteObject.forEach((note)=>{
-//         if(note.id===note_id){
 
-//         }
-//     })
-// }
+
+function updateNotes(noteObj) {
+    const data = localStorage.getItem('notes');
+    
+    if (data === null || data == '[]') {
+        const noteObjects = data===null?[]:Array.from(JSON.parse(data));
+        noteObjects.push(noteObj)
+        console.log("call save in DB");
+        localStorage.setItem('notes', JSON.stringify(noteObjects));
+        return;
+    }
+    const noteObjectList = Array.from(JSON.parse(data));
+    var flag=false;
+    console.log('get browser', noteObjectList);
+    noteObjectList.forEach((note,index) => {
+        if (note.id === noteObj.id) {
+            console.log(note,'updated',note.id ,"===" ,noteObj.id);
+           const updatedNote= Object.assign(new noteObject.Note(),note);
+           console.log("type of obj",typeof updatedNote,updatedNote);
+            updatedNote.updateNote(noteObj);
+            console.log("upteded nn",updatedNote);
+            noteObjectList[index]=updatedNote
+            flag=true;
+        }
+    })
+    console.log("afert update",noteObjectList);
+    if(!flag){
+        noteObjectList.push(noteObj);
+    }
+    localStorage.setItem('notes', JSON.stringify(noteObjectList));
+}
+function removeNotes(note) {
+    
+    const data = localStorage.getItem('notes');
+    console.log("call remove",data);
+    if (data == null || data == '[]') return
+    var noteObject = Array.from(JSON.parse(data));
+    noteObject=noteObject.filter((e) => {
+        note != e.id
+    })
+    let notDiv=document.getElementById(note);
+    notDiv.remove();
+    console.log('get after delete',noteObject);
+    localStorage.setItem('notes', JSON.stringify(noteObject));
+}
+
 function generateId() {
     var id = Math.floor(Math.random() * 1000);
     return `notes-id-${id}`;
